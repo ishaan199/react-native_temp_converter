@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { ButtonConvert } from "./components/buttonConvert/ButtonConvert";
 import {
   StyleSheet,
   Text,
@@ -12,16 +13,34 @@ import coldBg from "./assets/cold.png";
 import { Input } from "./components/Input";
 import { useState } from "react";
 import { DisplayTemperature } from "./components/DisplayTemperature/DisplayTemperature";
+import { UNIT, convertTemperature, getOppositeUnit } from "./utils/temperature";
 export default function App() {
   const [inputValue, setInputValue] = useState(0);
   const [currentUnit, setCurrentUnit] = useState("°C");
+  const oppositeUnit = getOppositeUnit(currentUnit);
+
+  function getConvertedTemperature() {
+    if (isNaN(inputValue)) {
+      return "";
+    } else {
+      return convertTemperature(inputValue, oppositeUnit).toFixed(1);
+    }
+  }
   return (
     <ImageBackground style={s.backgroundImage} source={hotBg}>
       <SafeAreaView style={s.root}>
         <View style={s.workspace}>
-          <DisplayTemperature unit={currentUnit} temperature={inputValue} />
+          <DisplayTemperature
+            unit={oppositeUnit}
+            temperature={getConvertedTemperature()}
+          />
           <Input unit={currentUnit} defaultValue={0} onChange={setInputValue} />
-          <Text>Button</Text>
+          <ButtonConvert
+            onPress={() => {
+              setCurrentUnit(oppositeUnit);
+            }}
+            unit={currentUnit}
+          />
         </View>
       </SafeAreaView>
     </ImageBackground>
