@@ -11,14 +11,27 @@ import { s } from "./app.style";
 import hotBg from "./assets/hot.png";
 import coldBg from "./assets/cold.png";
 import { Input } from "./components/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DisplayTemperature } from "./components/DisplayTemperature/DisplayTemperature";
-import { UNIT, convertTemperature, getOppositeUnit } from "./utils/temperature";
+import {
+  UNIT,
+  convertTemperature,
+  getOppositeUnit,
+  isIceTemp,
+} from "./utils/temperature";
 export default function App() {
   const [inputValue, setInputValue] = useState(0);
   const [currentUnit, setCurrentUnit] = useState("°C");
+  const [currentBackground, setCurrentBackground] = useState(coldBg);
   const oppositeUnit = getOppositeUnit(currentUnit);
 
+  useEffect(() => {
+    if (isIceTemp(inputValue, currentUnit)) {
+      setCurrentBackground(coldBg);
+    } else {
+      setCurrentBackground(hotBg);
+    }
+  }, [inputValue, currentUnit]);
   function getConvertedTemperature() {
     if (isNaN(inputValue)) {
       return "";
@@ -27,7 +40,7 @@ export default function App() {
     }
   }
   return (
-    <ImageBackground style={s.backgroundImage} source={hotBg}>
+    <ImageBackground style={s.backgroundImage} source={currentBackground}>
       <SafeAreaView style={s.root}>
         <View style={s.workspace}>
           <DisplayTemperature
